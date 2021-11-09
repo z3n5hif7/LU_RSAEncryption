@@ -1,25 +1,71 @@
 #include <stdio.h>
-#include <math.h>
+
+/*RESULTS: (98% accurate)
+ENCRYPTION -> 'ì' instead of 'a' (should be "lNYECaHS(N") 
+WORD: ENCRYPTION 
+ENCRYPTION: lNYECìHS(N
+DECRYPTION: ENCRYPTION
+
+RASTAMAN -> no BACKSPACE CHARACTER (should be "E(BACKSPACE CHARACTER)HAMAN")
+WORD: RASTAMAN 
+ENCRYPTION: EHAMAN
+DECRYPTION: RASTAMAN
+*/
+
+void simulate();//Simulates both Encryption & Decryption, and displays the results.
+void encrypt(int p, int q);
+void decrypt(int p, int q);
+
+typedef unsigned char String[25];//You can change 25
+
+//Defaults: p=11, q=13, e=7, d=223 
+//Test out any word here:
+// String string = "RASTAMAN";
+String string = "ENCRYPTION";
 
 int main(){
+    int p=11,q=13;
 
-    int p = 5;
-    int q = 7;
-    int n = p*q;
-    int z=(p-1)*(q-1);
-    int e = 5;
-    int d=29;
-    int v = 22;//m
-    int num=e*d-1;
-    printf("l:%d\n",v);
-    printf("p:%2d\n q:%2d\n n:%2d\n z:%2d\n e:%2d\n d:%2d\n e*d-1:%2d\n",p,q,n,z,e,d,num);
-
-    int c =  pow(v,e);
-    int cipher = c % n ; 
-    //I was only able to solve the cipher for the letter "v" 
-    //based from the table in your video Sir
-    printf("m^e:%d\n",c);
-    printf("cipher:%d\n",cipher);
-
+    simulate(p,q);
     return 0;
+}
+
+void simulate(int p, int q){
+    printf("WORD: %s\n",string);
+    encrypt(p,q);
+    printf("ENCRYPTION: %s\n",string);
+    decrypt(p,q);
+    printf("DECRYPTION: %s\n",string);
+}
+
+void encrypt(int p, int q){
+
+    int n=p*q, z=(p-1)*(q-1), e=7, d=223, c=1,i,m, exp, base;
+
+    for(i=0,m=string[i],c=1,exp=e,base=m;string[i]!='\0';i++,c=1,m=string[i],base=m,exp=e){
+        while(exp){
+            if(exp%2){
+                c=(base*c)%n;
+            }
+            base=(base*base)%n;
+            exp/=2;
+        }
+        string[i]=c;
+    }
+}
+
+void decrypt(int p, int q){
+
+    int n=p*q, z=(p-1)*(q-1), e=7, d=223, c=1,i,m, base, exp;
+
+    for(i=0,m=1,c=string[i],base=c,exp=d;string[i]!='\0';i++,m=1,c=string[i],base=c,exp=d){
+        while(exp){
+            if(exp%2){
+                m=(base*m)%n;
+            }
+            base=(base*base)%n;
+            exp/=2;
+        }
+        string[i]=m;
+    }
 }
